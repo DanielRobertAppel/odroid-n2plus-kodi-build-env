@@ -1,3 +1,4 @@
+# TODO : Split instructions into two ansible playbooks.  One for Initial Setup slash Environment assuredness.  The Second, for building and releasing kodi packages
 #TODO: de-duplicate apt-get install package requests before putting into ansible playbook
 # TODO: playbook must be run as root
 
