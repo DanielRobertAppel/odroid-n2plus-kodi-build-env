@@ -1,9 +1,9 @@
 # TODO : Split instructions into two ansible playbooks.  One for Initial Setup slash Environment assuredness.  The Second, for building and releasing kodi packages
 #TODO: de-duplicate apt-get install package requests before putting into ansible playbook
-# TODO: playbook must be run as root
+# TODO: playbook must be run as root AND in a tmux session
 
 # Dependencies:
-sudo apt install --yes git python3 python3-pip python3-apt autoconf automake libtool libltdl-dev libao-dev libavahi-compat-libdnssd-dev avahi-daemon libunistring-dev
+sudo apt install --yes git python3 python3-pip python3-apt autoconf automake libtool libltdl-dev libao-dev libavahi-compat-libdnssd-dev avahi-daemon libunistring-dev tmux
 pip3 install ansible
 
 ## Build libshairplay-dev
