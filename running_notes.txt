@@ -57,3 +57,10 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLATFO
 # Only using 4 CPUs, because when I use all 6, the entire system crashes
 cmake --build . -- VERBOSE=1 -j 4
 
+make install
+
+
+# Build Binary add-ons
+cd /root/kodi
+make -j 4 -C tools/depends/target/binary-addons PREFIX=/usr/local
+make install
