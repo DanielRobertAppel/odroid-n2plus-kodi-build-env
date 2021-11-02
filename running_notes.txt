@@ -1,30 +1,67 @@
 # TODO : Split instructions into two ansible playbooks.  One for Initial Setup slash Environment assuredness.  The Second, for building and releasing kodi packages
 #TODO: de-duplicate apt-get install package requests before putting into ansible playbook
 # TODO: playbook must be run as root AND in a tmux session
+##Knowledge tidbit -- libreelec and coreelec run on gbm (generic buffer module)
+
+# From a clean image installation on the emmc:  SSH into your Odroid N2+: username "odroid" password "odroid"
+#00 Set locale and default keyboard language
+sudo locale-gen en_GB.UTF-8
+sudo localectl set-keymap gb
+#01 sudo apt-get update
+#02 sudo apt-get dist-upgrade --yes
+#03 If changes were installed in step 02, then reboot.  If no changes, goto step 04
+#04 [continue to 'dependencies' and the rest of the notes]
 
 # Dependencies:
-sudo apt install --yes git python3 python3-pip python3-apt autoconf automake libtool libltdl-dev libao-dev libavahi-compat-libdnssd-dev avahi-daemon libunistring-dev tmux
-pip3 install ansible
+sudo apt install --yes git python3 python3-pip python3-apt autoconf automake libtool libltdl-dev libao-dev libavahi-compat-libdnssd-dev avahi-daemon libunistring-dev tmux nano tig software-properties-common dkms bluez
+sudo systemctl stop unattended-upgrades.service
+sudo systemctl disable unattended-upgrades.service
+
+
+## GPU/VPU DRIVERS
+#05 Install Bifrost Mali GPU/VPU drivers.
+sudo apt-get install --yes mali-bifrost-wayland-driver mali-bifrost-dkms
+# Rebuild and correct headers
+cd ~
+wget http://ppa.linuxfactory.or.kr/band-aid/rebuild_bifrost_dkms.sh
+chmod +x ~/rebuild_bifrost_dkms.sh
+sudo ./rebuild_bifrost_dkms
+sudo reboot
+
+
+#06 Turn off that horrible blinking blue light
+sudo cp ~/odroid-n2plus-kodi-build-env/blue-led-off.sh /root/
+sudo chmod +x /root/blue-led-off.sh
+sudo crontab -e
+## Create entry:  @reboot /root/blue-led-off.sh
+
 
 ## Build libshairplay-dev
+cd ~
 git clone https://github.com/juhovh/shairplay
 cd shairplay
 ./autogen.sh
 ./configure
 make -j 4
-make install
+sudo make install
+sudo ldconfig
 
 sudo add-apt-repository -s ppa:team-xbmc/xbmc-nightly
 
-sudo apt install debhelper autoconf automake autopoint gettext autotools-dev cmake curl default-jre doxygen gawk gcc gdc gperf libasound2-dev libass-dev libavahi-client-dev libavahi-common-dev libbluetooth-dev libbluray-dev libbz2-dev libcdio-dev libp8-platform-dev libcrossguid-dev libcurl4-openssl-dev libcwiid-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libenca-dev libflac-dev libflatbuffers-dev libfmt-dev libfontconfig-dev libfreetype6-dev libfribidi-dev libfstrcmp-dev libgcrypt-dev libgif-dev libgles2-mesa-dev libgl1-mesa-dev libglu1-mesa-dev libgnutls28-dev libgpg-error-dev libgtest-dev libiso9660-dev libjpeg-dev liblcms2-dev libltdl-dev liblzo2-dev libmicrohttpd-dev libnfs-dev libogg-dev libpcre3-dev libplist-dev libpng-dev libpulse-dev libsmbclient-dev libspdlog-dev libsqlite3-dev libssl-dev libtag1-dev libtiff5-dev libtinyxml-dev libtool libudev-dev libva-dev libvdpau-dev libvorbis-dev libxmu-dev libxrandr-dev libxslt1-dev libxt-dev lsb-release meson nasm ninja-build python3-dev python3-pil python3-pip rapidjson-dev swig unzip uuid-dev yasm zip zlib1g-dev libcec-dev libfmt-dev liblircclient-dev liblirc-dev libglew-dev libwayland-dev libxkbcommon-dev waylandpp-dev wayland-protocols libgbm-dev libinput-dev libxkbcommon-dev doxygen libcap-dev libsndio-dev libmariadbd-dev ccache distcc scons libwayland-dev libwayland-egl1-mesa libpugixml-dev clang-format libnss-mdns libglfw3-dev libgles2-mesa-dev libgles-dev libegl-dev
+sudo apt install debhelper autoconf automake autopoint gettext autotools-dev cmake curl default-jre doxygen gawk gcc gdc gperf libasound2-dev libass-dev libavahi-client-dev libavahi-common-dev libbluetooth-dev libbluray-dev libbz2-dev libcdio-dev libp8-platform-dev libcrossguid-dev libcurl4-openssl-dev libcwiid-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libenca-dev libflac-dev libflatbuffers-dev libfmt-dev libfontconfig-dev libfreetype6-dev libfribidi-dev libfstrcmp-dev libgcrypt-dev libgif-dev libgles2-mesa-dev libgnutls28-dev libgpg-error-dev libgtest-dev libiso9660-dev libjpeg-dev liblcms2-dev libltdl-dev liblzo2-dev libmicrohttpd-dev libnfs-dev libogg-dev libpcre3-dev libplist-dev libpng-dev libpulse-dev libsmbclient-dev libspdlog-dev libsqlite3-dev libssl-dev libtag1-dev libtiff5-dev libtinyxml-dev libtool libudev-dev libva-dev libvdpau-dev libvorbis-dev libxmu-dev libxrandr-dev libxslt1-dev libxt-dev lsb-release meson nasm ninja-build python3-dev python3-pil python3-pip rapidjson-dev swig unzip uuid-dev yasm zip zlib1g-dev libcec-dev libfmt-dev liblircclient-dev liblirc-dev libglew-dev libxkbcommon-dev libgbm-dev libinput-dev libxkbcommon-dev doxygen libcap-dev libsndio-dev libmariadbd-dev ccache distcc scons libpugixml-dev clang-format libglfw3-dev libgles2-mesa-dev libgles-dev libegl-dev wayland-protocols waylandpp-dev
+
+sudo ldconfig
+
+sudo usermod -a -G video,input odroid
 
 # Cloning
 ## TODO : a variable switch for the latest release-branch name
+cd ~
 git clone -b Matrix https://github.com/xbmc/xbmc kodi
 
 
 # Build Tools
-cd kodi
+cd ~/kodi
 
 sudo make -j 4 -C tools/depends/target/crossguid PREFIX=/usr/local
 sudo make -j 4 -C tools/depends/target/flatbuffers PREFIX=/usr/local
@@ -36,32 +73,31 @@ sudo make -j 4 -C tools/depends/target/waylandpp PREFIX=/usr/local
 
 mkdir ~/kodi-build
 cd ~/kodi-build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLATFORM_NAME="wayland" \
+cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLATFORM_NAME="wayland" \
 	-DENABLE_INTERNAL_FLATBUFFERS=ON \
 	-DENABLE_ALSA=ON -DENABLE_AIRTUNES=ON -DENABLE_UPNP=ON \
 	-DENABLE_INTERNAL_FMT=ON -DENABLE_INTERNAL_RapidJSON=ON \
-	-DENABLE_OPENGLES=ON -DENABLE_OPENGL=ON -DENABLE_X=ON \
+	-DENABLE_OPENGLES=ON \
 	-DVERBOSE=OFF -DENABLE_NEON=ON \
 	-DWITH_CPU=cortex-a73.cortex-a53 -DWITH_ARCH=aarch64 \
 	-DENABLE_PULSEAUDIO=ON -DENABLE_CCACHE=ON \
 	-DENABLE_INTERNAL_FFMPEG=ON \
-	-DENABLE_APP_AUTONAME=ON -DENABLE_DVDCSS=ON -DENABLE_INTERNAL_CROSSGUID=ON -DENABLE_OPTICAL=ON \
+	-DENABLE_DVDCSS=ON -DENABLE_INTERNAL_CROSSGUID=ON -DENABLE_OPTICAL=ON \
 	-DENABLE_EVENTCLIENTS=ON -DENABLE_CAP=ON \
 	-DENABLE_VDPAU=ON \
 	-DENABLE_MARIADBCLIENT=ON \
 	-DENABLE_INTERNAL_DAV1D=ON \
-	-DCMAKE_BUILD_TYPE=Release \
-	-DWAYLAND_RENDER_SYSTEM=gles \
+	-DAPP_RENDER_SYSTEM="gles" \
 	--enable-codec=amcodec \
 	../kodi
 
 # Only using 4 CPUs, because when I use all 6, the entire system crashes
 cmake --build . -- VERBOSE=1 -j 4
 
-make install
+sudo make install
 
 
-# Build Binary add-ons
+# DO NOT Build Binary add-ons
 cd /root/kodi
 make -j 4 -C tools/depends/target/binary-addons PREFIX=/usr/local
 make install
