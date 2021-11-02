@@ -16,7 +16,7 @@ make install
 
 sudo add-apt-repository -s ppa:team-xbmc/xbmc-nightly
 
-sudo apt install debhelper autoconf automake autopoint gettext autotools-dev cmake curl default-jre doxygen gawk gcc gdc gperf libasound2-dev libass-dev libavahi-client-dev libavahi-common-dev libbluetooth-dev libbluray-dev libbz2-dev libcdio-dev libp8-platform-dev libcrossguid-dev libcurl4-openssl-dev libcwiid-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libenca-dev libflac-dev libflatbuffers-dev libfmt-dev libfontconfig-dev libfreetype6-dev libfribidi-dev libfstrcmp-dev libgcrypt-dev libgif-dev libgles2-mesa-dev libgl1-mesa-dev libglu1-mesa-dev libgnutls28-dev libgpg-error-dev libgtest-dev libiso9660-dev libjpeg-dev liblcms2-dev libltdl-dev liblzo2-dev libmicrohttpd-dev libmysqlclient-dev libnfs-dev libogg-dev libpcre3-dev libplist-dev libpng-dev libpulse-dev libsmbclient-dev libspdlog-dev libsqlite3-dev libssl-dev libtag1-dev libtiff5-dev libtinyxml-dev libtool libudev-dev libva-dev libvdpau-dev libvorbis-dev libxmu-dev libxrandr-dev libxslt1-dev libxt-dev lsb-release meson nasm ninja-build python3-dev python3-pil python3-pip rapidjson-dev swig unzip uuid-dev yasm zip zlib1g-dev libcec-dev libfmt-dev liblircclient-dev liblirc-dev libglew-dev libwayland-dev libxkbcommon-dev waylandpp-dev wayland-protocols libgbm-dev libinput-dev libxkbcommon-dev doxygen libcap-dev libsndio-dev libmariadbd-dev ccache distcc scons libwayland-dev libwayland-egl1-mesa
+sudo apt install debhelper autoconf automake autopoint gettext autotools-dev cmake curl default-jre doxygen gawk gcc gdc gperf libasound2-dev libass-dev libavahi-client-dev libavahi-common-dev libbluetooth-dev libbluray-dev libbz2-dev libcdio-dev libp8-platform-dev libcrossguid-dev libcurl4-openssl-dev libcwiid-dev libdbus-1-dev libdrm-dev libegl1-mesa-dev libenca-dev libflac-dev libflatbuffers-dev libfmt-dev libfontconfig-dev libfreetype6-dev libfribidi-dev libfstrcmp-dev libgcrypt-dev libgif-dev libgles2-mesa-dev libgl1-mesa-dev libglu1-mesa-dev libgnutls28-dev libgpg-error-dev libgtest-dev libiso9660-dev libjpeg-dev liblcms2-dev libltdl-dev liblzo2-dev libmicrohttpd-dev libnfs-dev libogg-dev libpcre3-dev libplist-dev libpng-dev libpulse-dev libsmbclient-dev libspdlog-dev libsqlite3-dev libssl-dev libtag1-dev libtiff5-dev libtinyxml-dev libtool libudev-dev libva-dev libvdpau-dev libvorbis-dev libxmu-dev libxrandr-dev libxslt1-dev libxt-dev lsb-release meson nasm ninja-build python3-dev python3-pil python3-pip rapidjson-dev swig unzip uuid-dev yasm zip zlib1g-dev libcec-dev libfmt-dev liblircclient-dev liblirc-dev libglew-dev libwayland-dev libxkbcommon-dev waylandpp-dev wayland-protocols libgbm-dev libinput-dev libxkbcommon-dev doxygen libcap-dev libsndio-dev libmariadbd-dev ccache distcc scons libwayland-dev libwayland-egl1-mesa libpugixml-dev clang-format libnss-mdns libglfw3-dev libgles2-mesa-dev libgles-dev libegl-dev
 
 # Cloning
 ## TODO : a variable switch for the latest release-branch name
@@ -26,17 +26,17 @@ git clone -b Matrix https://github.com/xbmc/xbmc kodi
 # Build Tools
 cd kodi
 
-sudo make -C tools/depends/target/crossguid PREFIX=/usr/local
-sudo make -C tools/depends/target/flatbuffers PREFIX=/usr/local
-sudo make -C tools/depends/target/libfmt PREFIX=/usr/local
-sudo make -C tools/depends/target/libspdlog PREFIX=/usr/local
-sudo make -C tools/depends/target/wayland-protocols PREFIX=/usr/local
-sudo make -C tools/depends/target/waylandpp PREFIX=/usr/local
+sudo make -j 4 -C tools/depends/target/crossguid PREFIX=/usr/local
+sudo make -j 4 -C tools/depends/target/flatbuffers PREFIX=/usr/local
+sudo make -j 4 -C tools/depends/target/libfmt PREFIX=/usr/local
+sudo make -j 4 -C tools/depends/target/libspdlog PREFIX=/usr/local
+sudo make -j 4 -C tools/depends/target/wayland-protocols PREFIX=/usr/local
+sudo make -j 4 -C tools/depends/target/waylandpp PREFIX=/usr/local
 
 
-mkdir /root/kodi-build
-cd /root/kodi-build
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLATFORM_NAME="x11 wayland gbm" \
+mkdir ~/kodi-build
+cd ~/kodi-build
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLATFORM_NAME="wayland" \
 	-DENABLE_INTERNAL_FLATBUFFERS=ON \
 	-DENABLE_ALSA=ON -DENABLE_AIRTUNES=ON -DENABLE_UPNP=ON \
 	-DENABLE_INTERNAL_FMT=ON -DENABLE_INTERNAL_RapidJSON=ON \
@@ -48,10 +48,11 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLATFO
 	-DENABLE_APP_AUTONAME=ON -DENABLE_DVDCSS=ON -DENABLE_INTERNAL_CROSSGUID=ON -DENABLE_OPTICAL=ON \
 	-DENABLE_EVENTCLIENTS=ON -DENABLE_CAP=ON \
 	-DENABLE_VDPAU=ON \
-	-DX11_RENDER_SYSTEM=gl \
 	-DENABLE_MARIADBCLIENT=ON \
 	-DENABLE_INTERNAL_DAV1D=ON \
 	-DCMAKE_BUILD_TYPE=Release \
+	-DWAYLAND_RENDER_SYSTEM=gles \
+	--enable-codec=amcodec \
 	../kodi
 
 # Only using 4 CPUs, because when I use all 6, the entire system crashes
