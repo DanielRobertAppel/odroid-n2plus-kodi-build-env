@@ -125,3 +125,7 @@ ninja
 sudo ninja install
 
 sudo ldconfig
+
+
+#using ffmpeg v4.3 (for api compliance with kodi)
+#trying dav1d v0.8.2 because latest doesn't compile with this older version of kodi

@@ -80,7 +80,7 @@ cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLAT
 	-DWITH_ARCH=aarch64 \
 	-DENABLE_PULSEAUDIO=OFF \
 	-DENABLE_CCACHE=ON \
-	-DENABLE_INTERNAL_FFMPEG=ON \
+	-DENABLE_INTERNAL_FFMPEG=OFF \
 	-DENABLE_APP_AUTONAME=OFF \
 	-DENABLE_DVDCSS=OFF \
 	-DENABLE_INTERNAL_CROSSGUID=OFF \
@@ -92,12 +92,12 @@ cmake -DCMAKE_BUILD_TYPE="Release" -DCMAKE_INSTALL_PREFIX=/usr/local -DCORE_PLAT
 	-DENABLE_INTERNAL_DAV1D=ON \
 	-DAPP_RENDER_SYSTEM="gles" \
 	--enable-codec=amcodec \
+	--DWITH_FFMPEG \
 	../kodi
 
 # Only using 4 CPUs, because when I use all 6, the entire system crashes
 cmake --build . -- VERBOSE=1 -j 4
 
-## LEFT OFF HERE : when compiling the highly configured ffmpeg, the compiler complains that ffmpeg couldn't find the libfdk_aac lib .  Despite this library being explicitly put into the CMakeLists.txt and autobuild.sh files
 
 sudo make install
 
