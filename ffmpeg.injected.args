@@ -1,0 +1,15 @@
+ffmpeg injected args
+
+
+--enable-libdrm \
+--enable-version3 \
+--arch=aarch64 \
+--cpu=cortex-a73.cortex-a53 \
+--enable-opencl \
+--enable-opengl \
+--enable-shared \
+--enable-libfdk-aac \
+--enable-libtheora \
+--enable-libzvbi
+
+# note: all the the args will make the n2 look like it is frozen after the command is entered. Just wait.

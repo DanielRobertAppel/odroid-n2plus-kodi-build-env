@@ -1,0 +1,40 @@
+mesa panfrost build:
+
+# From a clean image installation on the emmc:  SSH into your Odroid N2+: username "odroid" password "odroid"
+#00 Set locale and default keyboard language
+sudo dpkg-reconfigure keyboard-configuration
+sudo setupcon
+#01 sudo apt-get update
+#02 sudo apt-get dist-upgrade --yes
+#03 sudo reboot  (wait for reboot to complete)
+#OPTIONAL : get nano
+sudo apt-get install nano
+#OPTIONAL : Stop that horrid blue blinking light
+sudo printf '#!/bin/bash\n\necho "none" > /sys/class/leds/n2\:blue/trigger' > /root/blue-led-off.sh
+sudo chmod +x /root/blue-led-off.sh
+sudo crontab -e
+# Create new root crontab entry:
+# @reboot /root/blue-led-off.sh
+
+sudo apt install --yes bison byacc ccache cmake curl flex g++ gcc git libarchive-dev libconfig++-dev libdrm-dev libexpat1-dev libomxil-bellagio-dev libsensors-dev libsensors4-dev libtexlua53-dev libtolua-dev libunwind-dev libvdpau-dev libwayland-dev libwayland-egl-backend-dev libx11-xcb-dev libxcb-dri2-0-dev libxcb-dri3-dev libxcb-glx0-dev libxcb-present-dev libxcb-shm0-dev libxfixes-dev libxml++2.6-dev libxrandr-dev libxshmfence-dev libxv-dev libxvmc-dev libxxf86vm-dev libzstd-dev llvm-dev meson pkg-config python3 python3-mako python3-setuptools tig tmux valgrind wayland-protocols wayland-scanner++ wget zlib1g-dev
+
+
+# Need libva-dev from v1.8 or higher -- build from source
+cd ~
+wget https://github.com/intel/libva/releases/download/2.13.0/libva-2.13.0.tar.bz2
+tar -xvf libva-2.13.0.tar.bz2
+cd libva
+./configure
+make -j 4
+sudo make install
+
+
+git clone -b 21.3 https://gitlab.freedesktop.org/mesa/mesa.git
+cd mesa
+mkdir build
+cd build
+meson ..  #292 build targets
+sudo ninja install
+
+#reboot -- my n2+ needed a physical reboot (removed power, reconnected power) for it to reboot successfully.  Boot sequence was perfect. huh.
+
