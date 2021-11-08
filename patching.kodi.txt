@@ -1,0 +1,7 @@
+#Patching Kodi from LibreElec AMLogic code addons
+
+git clone -b Matrix https://github.com/xbmc/xbmc kodi-matrix-source
+git clone -b libreelec-10.0 https://github.com/libreelec/libreelec.tv
+
+cd kodi-matrix-source
+#
