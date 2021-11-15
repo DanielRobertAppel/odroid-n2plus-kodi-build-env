@@ -1,0 +1,19 @@
+Mimicking LibreELEC playback via applying various kernel-level and kodi-level patches
+
+01. git clone -b amlogic-upstream https://github.com/libreelec/LibreELEC.tv
+02. git clone -b Matrix https://github.com/team-xbmc/xbmc kodi
+03. git clone --depth 1 https://github.com/tobetter/linux \
+-b `uname -r | awk -F'.' '{print "odroid-" $1 "." $2 ".y"}'`
+
+04. Apply listed patches in ~/LibreELEC.tv/projects/Amlogic/patches/kodi/kodi-drmprime-seeking.patch  to the various kodi files specified within.  Some/most line numbers will not match perfectly, but the skeleton of the quoted code is definitely present.
+
+TODO -- all below
+
+05. Apply patches within ~/LibreELEC.tv/projects/Amlogic/patches/linux/*  to ~/linux/arch/arm64/boot/dts/${file}.dts(i) . This will allow you to spin up a modern-ish linux kernel, but with the specific patches that allow libreELEC to run video-decoding-circles-around a stock kernel config
+
+06. Compile the kernel
+07. write the linux kernel to an emmc card
+08. boot
+09. configure environment
+10. compile kodi -- using patched versions of files from step 04.
+11. try kodi
