@@ -1,0 +1,5 @@
+TODO:
+
+# create a self-contained sandbox env (a specified directory) which only uses its own binaries and libraries in order to build ffmpeg and kodi
+# create a plaintext recipe of what libraries/programs/binaries to build and install and list the explicit reason for their existence and be clear on the order in-which each individual item is installed in the sandbox
+# create a build engine which can read the plaintext recipe and build the modules in the specified order
